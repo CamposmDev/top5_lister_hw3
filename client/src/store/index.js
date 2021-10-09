@@ -2,6 +2,7 @@ import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import MoveItem_Transaction from '../transactions/MoveItem_Transaction'
+import ChangeItem_Transaction from '../transactions/ChangeItem_Transaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -18,8 +19,8 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
-    ADD_LIST: "ADD_LIST",
-    MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION"
+    MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
+    SET_ITEM_NAME_EDIT_ACTIVE: "SET_ITEM_NAME_EDIT_ACTIVE"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -56,16 +57,6 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: payload
                 });
             }
-            // case GlobalStoreActionType.ADD_LIST: {
-            //     return setStore({
-            //         idNamePairs: payload.idNamePairs,
-            //         currentList: payload.top5List,
-            //         newListCounter: store.newListCounter + 1,
-            //         isListNameEditActive: false,
-            //         isItemEditActive: false,
-            //         listMarkedForDeletion: null
-            //     });
-            // }
             // LIST UPDATE OF ITS NAME
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
@@ -121,6 +112,16 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
+            case GlobalStoreActionType.SET_ITEM_NAME_EDIT_ACTIVE: {
+                return setStore({
+                    isNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: true,
+                    listMarkedForDeletion: null
+                })
+            }
             default:
                 return store;
         }
@@ -162,6 +163,18 @@ export const useGlobalStore = () => {
         }
         asyncChangeListName(id);
     }
+
+    store.addChangeItemTransaction = function (index, newText) {
+        let oldText = store.currentList.items[index];
+        let transaction = new ChangeItem_Transaction(store, index, oldText, newText);
+        tps.addTransaction(transaction);
+    }
+
+    store.changeItem = function (index, newText) {
+        store.currentList.items[index] = newText;
+        store.updateCurrentList();
+    }   
+
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
@@ -316,6 +329,13 @@ export const useGlobalStore = () => {
     store.handleCloseModal = function () {
         store.hideDeleteListModal();
         console.log(store.listMarkedForDeletion);
+    }
+
+    store.setIsItemNameEditActive = function (list) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
+            payload: store.currentList
+        });
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

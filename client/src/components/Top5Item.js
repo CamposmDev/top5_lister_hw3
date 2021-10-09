@@ -8,6 +8,8 @@ import { GlobalStoreContext } from '../store'
 */
 function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
+    const [editActive, setEditActive] = useState(false);
+    const [text, setText] = useState("");
     const [draggedTo, setDraggedTo] = useState(0);
 
     function handleDragStart(event) {
@@ -41,12 +43,42 @@ function Top5Item(props) {
         store.addMoveItemTransaction(sourceId, targetId);
     }
 
+    function handleToggleEdit(event) {
+        toggleEdit();
+    }
+
+    function toggleEdit() {
+        console.log('Item Toggle Edit! ' + 'index=' + index + ', name=' + props.text + ', editActive=' + editActive)
+        let newActive = !editActive;
+        if (newActive) {
+            store.setIsItemNameEditActive();
+        }
+        setEditActive(newActive);
+        console.log('editActive=' + editActive);
+    }
+
+    function handleKeyPress(event) {
+        if (event.code === 'Enter') {
+            let id = props.index;
+            console.log('id=' + id + ', text=' + text);
+            // setText(props.text);
+            store.addChangeItemTransaction(id, text);
+            // store.changeItemName(id, text);
+            toggleEdit();
+        }
+    }
+
+    function handleUpdateText(event) {
+        setText(event.target.value);
+    }
+
     let { index } = props;
     let itemClass = "top5-item";
     if (draggedTo) {
         itemClass = "top5-item-dragged-to";
     }
-    return (
+
+    let itemCard =
         <div
             id={'item-' + (index + 1)}
             className={itemClass}
@@ -61,10 +93,25 @@ function Top5Item(props) {
                 type="button"
                 id={"edit-item-" + index + 1}
                 className="list-card-button"
+                onClick={handleToggleEdit}
                 value={"\u270E"}
             />
             {props.text}
-        </div>)
+        </div>;
+
+    if (editActive) {
+        itemCard = <input
+            className='top5-item-edit'
+            type='text'
+            onKeyPress={handleKeyPress}
+            onChange={handleUpdateText}
+            defaultValue={props.text}
+        />
+    }
+
+    
+
+    return itemCard;
 }
 
 export default Top5Item;
