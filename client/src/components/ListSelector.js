@@ -17,8 +17,7 @@ const ListSelector = () => {
     }, []);
 
     function addListHandler() {
-        console.log("Add a list!");
-
+        store.addList();
     }
 
     let listCard = "";

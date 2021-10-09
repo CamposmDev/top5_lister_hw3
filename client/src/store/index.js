@@ -134,6 +134,7 @@ export const useGlobalStore = () => {
         // GET THE LIST
         async function asyncChangeListName(id) {
             let response = await api.getTop5ListById(id);
+            console.log(response.data);
             if (response.data.success) {
                 let top5List = response.data.top5List;
                 top5List.name = newName;
@@ -291,6 +292,25 @@ export const useGlobalStore = () => {
             }
         }
         asyncDeleteList();
+    }
+
+    store.addList = function () {
+        async function asyncAddList() {
+            const response = await api.createTop5List({
+                name: 'Untitled',
+                items: [
+                    '?',
+                    '?',
+                    '?',
+                    '?',
+                    '?'
+                ]
+            });
+            console.log(response.data);
+        }
+        asyncAddList().then(() => {
+            store.loadIdNamePairs();
+        });
     }
 
     store.handleCloseModal = function () {

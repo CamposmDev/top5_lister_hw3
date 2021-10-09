@@ -23,6 +23,7 @@ function ListCard(props) {
 
             // CHANGE THE CURRENT LIST
             store.setCurrentList(_id);
+            console.log('Loading list: ' + idNamePair._id + ', ' + idNamePair.name);
         }
     }
 
