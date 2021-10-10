@@ -9,7 +9,7 @@ import { GlobalStoreContext } from '../store'
 function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
-    const [text, setText] = useState("");
+    // const [text, setText] = useState("");
     const [draggedTo, setDraggedTo] = useState(0);
 
     function handleDragStart(event) {
@@ -54,23 +54,21 @@ function Top5Item(props) {
             store.setIsItemNameEditActive();
         }
         setEditActive(newActive);
-        console.log('editActive=' + editActive);
+        // console.log('editActive=' + editActive);
     }
 
     function handleKeyPress(event) {
         if (event.code === 'Enter') {
             let id = props.index;
-            console.log('id=' + id + ', text=' + text);
-            // setText(props.text);
-            store.addChangeItemTransaction(id, text);
-            // store.changeItemName(id, text);
+            console.log('id=' + id + ', text=' + event.target.value);
+            store.addChangeItemTransaction(id, event.target.value);
             toggleEdit();
         }
     }
 
-    function handleUpdateText(event) {
-        setText(event.target.value);
-    }
+    // function handleUpdateText(event) {
+    //     setText(event.target.value);
+    // }
 
     let { index } = props;
     let itemClass = "top5-item";
@@ -104,7 +102,7 @@ function Top5Item(props) {
             className='top5-item-edit'
             type='text'
             onKeyPress={handleKeyPress}
-            onChange={handleUpdateText}
+            // onChange={handleUpdateText}
             defaultValue={props.text}
         />
     }

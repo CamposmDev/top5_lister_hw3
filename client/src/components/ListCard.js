@@ -65,6 +65,13 @@ function ListCard(props) {
     if (store.isListNameEditActive) {
         cardStatus = true;
     }
+
+
+    // console.log(' name=' + idNamePair.name + ', ' + (store.listMarkedForEditing === idNamePair._id));
+    // if (store.listMarkedForEditing === idNamePair._id) {
+    //     toggleEdit();
+    // }
+
     let cardElement =
         <div
             id={idNamePair._id}
