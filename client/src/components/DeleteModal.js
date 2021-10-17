@@ -14,7 +14,6 @@ function DeleteModal() {
     let name = "";
     if (store.listMarkedForDeletion) {
         name = store.listMarkedForDeletion.name;
-        console.log("List marked for deletion: name=" + name);
     }
     function handleDeleteList(event) {
         store.deleteMarkedList();

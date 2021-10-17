@@ -93,7 +93,7 @@ export const useGlobalStore = () => {
             }
             case GlobalStoreActionType.MARK_LIST_FOR_DELETION: {
                 if (payload !== null) {
-                    console.log('payload=[' + payload._id + ', ' + payload.name + ']');
+                    // console.log('payload=[' + payload._id + ', ' + payload.name + ']');
                 }
                 return setStore({
                     idNamePairs: store.idNamePairs,
@@ -233,7 +233,6 @@ export const useGlobalStore = () => {
         store.updateCurrentList();
     }
 
-
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
     store.closeCurrentList = function () {
         storeReducer({
@@ -356,19 +355,22 @@ export const useGlobalStore = () => {
     }
 
     store.deleteMarkedList = function () {
+        let idNamePair = store.listMarkedForDeletion
         async function asyncDeleteList() {
-            const response = await api.deleteTop5ListById(store.listMarkedForDeletion._id);
-            if (response.data.success) {
-                console.log("Deleted " + store.listMarkedForDeletion.name + " :D")
-                // update list
-                store.hideDeleteListModal();
-                store.loadIdNamePairs();
-            } else {
-                store.loadIdNamePairs();
-                console.log("API FAILED TO DELETE LIST " + store.listMarkedForDeletion);
+            try {
+                const response = await api.deleteTop5ListById(idNamePair._id);
+                if (!response.data.success) {
+                    throw new Error()
+                }
+            } catch (err) {
+                console.log(err)
             }
         }
-        asyncDeleteList();
+        asyncDeleteList().then(() => {
+            console.log('Deleted: [id=' + idNamePair._id + ', name=' + idNamePair.name + ']');
+            store.loadIdNamePairs()
+            store.hideDeleteListModal()
+        })
     }
 
     store.addList = function () {

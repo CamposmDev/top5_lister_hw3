@@ -15,12 +15,16 @@ const ListSelector = () => {
 
     useEffect(() => {
         store.loadIdNamePairs();
-    }, []);
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     function addListHandler() {
         store.addList();
     }
 
+    store.idNamePairs.map((pair) => {
+        console.log('id=' + pair._id + ', name=' + pair.name);
+    });
+    console.log('============================================================================')
 
     let btAddList = store.isListNameEditActive ?
         <input type="button"
