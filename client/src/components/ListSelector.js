@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import ListCard from './ListCard.js'
 import { GlobalStoreContext } from '../store'
@@ -7,6 +7,7 @@ import DeleteModal from './DeleteModal'
     This React component lists all the top5 lists in the UI.
     
     @author McKilla Gorilla
+    @author Michael Campos
 */
 const ListSelector = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -21,6 +22,18 @@ const ListSelector = () => {
     }
 
 
+    let btAddList = store.isListNameEditActive ?
+        <input type="button"
+            disabled={true}
+            id="add-list-button"
+            className="top5-button-disabled"
+            value="+" /> :
+        <input type="button"
+            id="add-list-button"
+            className="top5-button"
+            onClick={addListHandler}
+            value="+" />
+
     let listCard = "";
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
@@ -34,18 +47,11 @@ const ListSelector = () => {
     return (
         <div id="top5-list-selector">
             <div id="list-selector-heading">
-                <input
-                    type="button"
-                    id="add-list-button"
-                    className="top5-button"
-                    onClick={addListHandler}
-                    value="+" />
+                {btAddList}
                 Your Lists
             </div>
             <div id="list-selector-list">
-                {
-                    listCard
-                }
+                {listCard}
                 <DeleteModal />
             </div>
         </div>)

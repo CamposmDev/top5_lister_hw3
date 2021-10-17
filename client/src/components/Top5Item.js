@@ -9,7 +9,6 @@ import { GlobalStoreContext } from '../store'
 function Top5Item(props) {
     const { store } = useContext(GlobalStoreContext);
     const [editActive, setEditActive] = useState(false);
-    // const [text, setText] = useState("");
     const [draggedTo, setDraggedTo] = useState(0);
 
     function handleDragStart(event) {
@@ -48,13 +47,11 @@ function Top5Item(props) {
     }
 
     function toggleEdit() {
-        console.log('Item Toggle Edit! ' + 'index=' + index + ', name=' + props.text + ', editActive=' + editActive)
         let newActive = !editActive;
         if (newActive) {
             store.setIsItemNameEditActive();
         }
         setEditActive(newActive);
-        // console.log('editActive=' + editActive);
     }
 
     function handleKeyPress(event) {
@@ -66,49 +63,54 @@ function Top5Item(props) {
         }
     }
 
-    // function handleUpdateText(event) {
-    //     setText(event.target.value);
-    // }
-
-    let { index } = props;
+    let cardStatus = false;
+    if (store.isItemEditActive) {
+        cardStatus = true;
+    }
+    let { index, text } = props;
     let itemClass = "top5-item";
     if (draggedTo) {
         itemClass = "top5-item-dragged-to";
     }
 
-    let itemCard =
-        <div
-            id={'item-' + (index + 1)}
+    console.log('index=' + index + ', name=' + text + ', editActive=' + editActive + ', store.isItemEditActive=' + store.isItemEditActive)
+
+    // Define if itemCard should have controls or not based on store.isItemEditActive
+    let itemCard = store.isItemEditActive ?
+        <div id={'item-' + (index + 1)}
+            className={itemClass}>
+            <input
+                disabled={cardStatus}
+                type="button"
+                id={"edit-item-" + index + 1}
+                className="list-card-button"
+                onClick={handleToggleEdit}
+                value={"\u270E"} />
+            {text}</div> :
+        <div id={'item-' + (index + 1)}
             className={itemClass}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            draggable="true"
-        >
+            draggable="true">
             <input
+                disabled={cardStatus}
                 type="button"
                 id={"edit-item-" + index + 1}
                 className="list-card-button"
                 onClick={handleToggleEdit}
-                value={"\u270E"}
-            />
-            {props.text}
-        </div>;
+                value={"\u270E"} />
+            {text}</div>;
 
     if (editActive) {
         itemCard = <input
             className='top5-item-edit'
             type='text'
             onKeyPress={handleKeyPress}
-            // onChange={handleUpdateText}
-            defaultValue={props.text}
-        />
+            defaultValue={text} />
     }
-
-    
-
     return itemCard;
 }
 

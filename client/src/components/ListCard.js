@@ -10,8 +10,7 @@ import { GlobalStoreContext } from '../store'
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
-    const [ editActive, setEditActive ] = useState(false);
-    const [ text, setText ] = useState("");
+    const [editActive, setEditActive] = useState(false);
     store.history = useHistory();
     const { idNamePair, selected } = props;
 
@@ -43,13 +42,9 @@ function ListCard(props) {
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
+            store.changeListName(id, event.target.value);
             toggleEdit();
         }
-    }
-
-    function handleUpdateText(event) {
-        setText(event.target.value );
     }
 
     function handleDeleteList(event) {
@@ -66,15 +61,30 @@ function ListCard(props) {
         cardStatus = true;
     }
 
-
-    // console.log(' name=' + idNamePair.name + ', ' + (store.listMarkedForEditing === idNamePair._id));
-    // if (store.listMarkedForEditing === idNamePair._id) {
-    //     toggleEdit();
-    // }
-
-    let cardElement =
-        <div
-            id={idNamePair._id}
+    let listCard = store.isListNameEditActive ?
+        <div id={idNamePair._id}
+            key={idNamePair._id}
+            className={'list-card ' + selectClass}>
+            <span
+                id={"list-card-text-" + idNamePair._id}
+                key={"span-" + idNamePair._id}
+                className="list-card-text">
+                {idNamePair.name}
+            </span>
+            <input
+                disabled={cardStatus}
+                type="button"
+                id={"delete-list-" + idNamePair._id}
+                className="list-card-button"
+                value={"\u2715"} />
+            <input
+                disabled={cardStatus}
+                type="button"
+                id={"edit-list-" + idNamePair._id}
+                className="list-card-button"
+                value={"\u270E"} />
+        </div> :
+        <div id={idNamePair._id}
             key={idNamePair._id}
             onClick={handleLoadList}
             className={'list-card ' + selectClass}>
@@ -90,31 +100,28 @@ function ListCard(props) {
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
                 onClick={handleDeleteList}
-                value={"\u2715"}
-            />
+                value={"\u2715"} />
             <input
                 disabled={cardStatus}
                 type="button"
                 id={"edit-list-" + idNamePair._id}
                 className="list-card-button"
                 onClick={handleToggleEdit}
-                value={"\u270E"}
-            />
-        </div>;
+                value={"\u270E"} />
+        </div>
 
     if (editActive) {
-        cardElement =
+        listCard =
             <input
                 id={"list-" + idNamePair._id}
                 className='list-card'
                 type='text'
                 onKeyPress={handleKeyPress}
-                onChange={handleUpdateText}
                 defaultValue={idNamePair.name}
             />;
     }
     return (
-        cardElement
+        listCard
     );
 }
 
