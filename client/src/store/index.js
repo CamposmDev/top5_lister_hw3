@@ -392,10 +392,7 @@ export const useGlobalStore = () => {
             }
         }
         asyncAddList().then(() => {
-            storeReducer({
-                type: GlobalStoreActionType.MARK_LIST_FOR_EDITING,
-                payload: id
-            });
+            store.setCurrentList(id);
         });
     }
 
