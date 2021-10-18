@@ -42,8 +42,14 @@ function ListCard(props) {
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
-            store.changeListName(id, event.target.value);
+            let text = event.target.value;
+            if (text.length > 0) {
+                store.changeListName(id, text);
+            } else {
+                store.changeListName(id, "Untitled");
+            }
             toggleEdit();
+
         }
     }
 

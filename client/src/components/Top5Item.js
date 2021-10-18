@@ -57,8 +57,13 @@ function Top5Item(props) {
     function handleKeyPress(event) {
         if (event.code === 'Enter') {
             let id = props.index;
-            console.log('id=' + id + ', text=' + event.target.value);
-            store.addChangeItemTransaction(id, event.target.value);
+            let text = event.target.value;
+            if (text.length > 0) {
+                console.log('id=' + id + ', text=' + text);
+                store.addChangeItemTransaction(id, text);
+            } else {
+                store.addChangeItemTransaction(id, '?');
+            }
             toggleEdit();
         }
     }
