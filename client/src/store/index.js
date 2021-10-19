@@ -30,6 +30,42 @@ export const GlobalStoreActionType = {
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
 const tps = new jsTPS();
 
+const COOKIE_COUNTER_NAME = 'new-list-counter'
+
+function getCookie(name) {
+    let dc = document.cookie;
+    let prefix = name + "=";
+    console.log('prefix=' + prefix)
+    let begin = dc.indexOf("; " + prefix);
+    console.log('begin=' + begin);
+    if (begin == -1) {
+        begin = dc.indexOf(prefix);
+        if (begin != 0) return null;
+    } else {
+        begin += 2;
+        var end = document.cookie.indexOf(";", begin);
+        console.log('end=' + end)
+        if (end == -1) {
+            end = dc.length;
+        }
+    }
+    // because unescape has been deprecated, replaced with decodeURI
+    //return unescape(dc.substring(begin + prefix.length, end));
+    return decodeURI(dc.substring(begin + prefix.length, end));
+}
+
+function getCookieNewListCounter() {
+    let value = getCookie(COOKIE_COUNTER_NAME);
+    if (value === null) {
+        console.log('cookie-counter does not exist!')
+        document.cookie = COOKIE_COUNTER_NAME + '=0;'
+        return 0
+    }
+    console.log('cookie-counter exists!')
+    console.log('cookie-counter=' + value)
+    return value
+}
+
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
 // AVAILABLE TO THE REST OF THE APPLICATION
 export const useGlobalStore = () => {
@@ -37,7 +73,7 @@ export const useGlobalStore = () => {
     const [store, setStore] = useState({
         idNamePairs: [],
         currentList: null,
-        newListCounter: 0,
+        newListCounter: getCookieNewListCounter(),
         isItemEditActive: false,
         listMarkedForDeletion: null,
         listMarkedForEditing: null,
@@ -377,7 +413,7 @@ export const useGlobalStore = () => {
         let id;
         async function asyncAddList() {
             const response = await api.createTop5List({
-                name: 'Untitled',
+                name: 'Untitled' + store.newListCounter++,
                 items: [
                     '?',
                     '?',
@@ -393,7 +429,9 @@ export const useGlobalStore = () => {
         }
         asyncAddList().then(() => {
             store.setCurrentList(id);
-        });
+        }).then(() => {
+            document.cookie = COOKIE_COUNTER_NAME + '=' + store.newListCounter;
+        })
     }
 
     store.handleCloseModal = function () {
