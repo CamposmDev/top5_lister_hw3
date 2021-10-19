@@ -23,8 +23,6 @@ export const GlobalStoreActionType = {
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     SET_ITEM_NAME_EDIT_ACTIVE: "SET_ITEM_NAME_EDIT_ACTIVE",
     MARK_LIST_FOR_EDITING: "MARK_LIST_FOR_EDITING"
-    // SET_CLOSE_BUTTON_STATUS: "SET_CLOSE_BUTTON_STATUS",
-    // SET_UNDO_REDO_BUTTON_STATUS: "SET_UNDO_REDO_BUTTON_STATUS",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -35,9 +33,7 @@ const COOKIE_COUNTER_NAME = 'new-list-counter'
 function getCookie(name) {
     let dc = document.cookie;
     let prefix = name + "=";
-    console.log('prefix=' + prefix)
     let begin = dc.indexOf("; " + prefix);
-    console.log('begin=' + begin);
     if (begin == -1) {
         begin = dc.indexOf(prefix);
         if (begin != 0) return null;
@@ -49,8 +45,6 @@ function getCookie(name) {
             end = dc.length;
         }
     }
-    // because unescape has been deprecated, replaced with decodeURI
-    //return unescape(dc.substring(begin + prefix.length, end));
     return decodeURI(dc.substring(begin + prefix.length, end));
 }
 
@@ -280,9 +274,11 @@ export const useGlobalStore = () => {
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
     store.loadIdNamePairs = function () {
         async function asyncLoadIdNamePairs() {
-            const response = await api.getTop5ListPairs();
+            try {
+                const response = await api.getTop5ListPairs();
             if (response.data.success) {
                 let pairsArray = response.data.idNamePairs;
+                console.log('pairsArray=' + pairsArray)
                 storeReducer({
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
@@ -290,7 +286,16 @@ export const useGlobalStore = () => {
             }
             else {
                 console.log("API FAILED TO GET THE LIST PAIRS");
+                throw new Error()
             }
+            } catch (err) {
+                console.log(err)
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: []
+                });
+            }
+            
         }
         asyncLoadIdNamePairs();
     }
